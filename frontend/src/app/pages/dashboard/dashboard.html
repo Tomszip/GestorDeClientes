@@ -1,0 +1,108 @@
+<!-- Page Header -->
+<div class="d-flex align-items-center justify-content-between mb-4">
+  <div>
+    <h1 class="h3 fw-bold text-dark mb-1">Dashboard</h1>
+    <p class="text-secondary mb-0">Panel de control y métricas principales</p>
+  </div>
+  <div class="d-flex gap-2">
+    <button class="btn btn-outline-secondary btn-sm">
+      <i class="bi bi-upload me-1"></i>Subir archivo
+    </button>
+    <button class="btn btn-dark btn-sm">
+      <i class="bi bi-person-plus me-1"></i>Nuevo contacto
+    </button>
+  </div>
+</div>
+
+<!-- Métricas -->
+<div class="row g-4 mb-4">
+  <div class="col-12 col-sm-6 col-xl-3" *ngFor="let m of metricas">
+    <div class="card border rounded-3 p-4 h-100 shadow-sm hover-card">
+      <div class="d-flex align-items-start justify-content-between">
+        <div>
+          <p class="text-secondary small mb-2">{{ m.titulo }}</p>
+          <h2 class="fw-bold text-dark mb-1" style="font-size:2rem;">{{ m.valor }}</h2>
+          <p class="text-secondary small mb-0">{{ m.cambio }}</p>
+        </div>
+        <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0"
+             [style.background]="m.bgColor"
+             style="width:56px;height:56px;">
+          <i class="bi fs-4" [ngClass]="m.icono" [style.color]="m.textColor"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Actividad reciente + Últimos archivos -->
+<div class="row g-4 mb-4">
+
+  <!-- Actividad reciente -->
+  <div class="col-12 col-lg-6">
+    <div class="card border rounded-3 shadow-sm h-100">
+      <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center py-3 px-4">
+        <h6 class="fw-semibold mb-0">Actividad Reciente</h6>
+        <a href="#" class="text-secondary small text-decoration-none">Ver todas</a>
+      </div>
+      <div class="card-body px-4 py-2">
+        <div *ngFor="let act of actividades"
+             class="d-flex align-items-start gap-3 py-3 border-bottom border-light">
+          <div class="rounded-circle bg-light d-flex align-items-center justify-content-center fw-semibold flex-shrink-0 text-secondary"
+               style="width:40px;height:40px;font-size:0.85rem;">
+            {{ act.inicial }}
+          </div>
+          <div class="flex-grow-1">
+            <p class="mb-0 small text-dark">
+              <span class="fw-medium">{{ act.nombre }}</span> {{ act.accion }}
+            </p>
+            <p class="mb-0 text-secondary" style="font-size:0.75rem;">
+              <i class="bi bi-clock me-1"></i>{{ act.tiempo }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Últimos archivos -->
+  <div class="col-12 col-lg-6">
+    <div class="card border rounded-3 shadow-sm h-100">
+      <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center py-3 px-4">
+        <h6 class="fw-semibold mb-0">Últimos Archivos Compartidos</h6>
+        <a href="#" class="text-secondary small text-decoration-none">Ver todos</a>
+      </div>
+      <div class="card-body px-4 py-2">
+        <div *ngFor="let file of archivos"
+             class="d-flex align-items-center gap-3 py-3 border-bottom border-light file-row">
+          <div class="rounded-3 bg-light d-flex align-items-center justify-content-center flex-shrink-0"
+               style="width:44px;height:44px;">
+            <i class="bi bi-file-earmark-text fs-5" [style.color]="file.colorIcono"></i>
+          </div>
+          <div class="flex-grow-1 overflow-hidden">
+            <p class="mb-0 small fw-medium text-dark text-truncate">{{ file.nombre }}</p>
+            <p class="mb-0 text-secondary" style="font-size:0.75rem;">
+              {{ file.tipo }} · {{ file.tamano }} · {{ file.fecha }}
+            </p>
+          </div>
+          <div class="file-actions d-flex gap-1 flex-shrink-0">
+            <button class="btn btn-sm btn-light px-2"><i class="bi bi-eye"></i></button>
+            <button class="btn btn-sm btn-light px-2"><i class="bi bi-download"></i></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Stats adicionales -->
+<div class="row g-4">
+  <div class="col-12 col-md-4" *ngFor="let s of stats">
+    <div class="card border rounded-3 p-4 shadow-sm text-center hover-card">
+      <i class="bi fs-2 text-secondary mb-2" [ngClass]="s.icono"></i>
+      <h3 class="fw-bold text-dark mb-1">{{ s.valor }}</h3>
+      <p class="text-secondary small mb-2">{{ s.titulo }}</p>
+      <span class="badge rounded-pill px-3 py-1"
+            style="background:#F0FDF4;color:#16A34A;font-size:0.8rem;">{{ s.cambio }}</span>
+    </div>
+  </div>
+</div>

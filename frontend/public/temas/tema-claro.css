@@ -1,0 +1,6 @@
+/* Tema Claro — es el look por defecto del sitio (slate oscuro sobre fondo
+   claro). Se deja explícito acá para que los 3 temas existan como
+   archivos reales e intercambiables, tal como pide la consigna. */
+:root {
+  --primary-color: #0F172A;
+}

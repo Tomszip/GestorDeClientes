@@ -1,0 +1,179 @@
+<!-- Header -->
+<div class="d-flex align-items-center justify-content-between mb-4">
+  <div>
+    <h1 class="h3 fw-bold text-dark mb-1">Usuarios</h1>
+    <p class="text-secondary mb-0">Administrá los usuarios del sistema</p>
+  </div>
+  <button class="btn btn-dark btn-sm" (click)="abrirFormularioNuevo()">
+    <i class="bi bi-person-plus me-1"></i>Nuevo Usuario
+  </button>
+</div>
+
+<div class="alert alert-danger py-2 small" *ngIf="error">{{ error }}</div>
+
+<!-- Formulario de alta/edición -->
+<div class="card border rounded-3 shadow-sm p-4 mb-4" *ngIf="mostrandoFormulario">
+  <h2 class="h6 fw-semibold text-dark mb-3">{{ usuarioEditando ? 'Editar usuario' : 'Nuevo usuario' }}</h2>
+
+  <div class="row g-3 mb-3">
+    <div class="col-12 col-md-6">
+      <label class="form-label fw-medium">Nombre *</label>
+      <input type="text" class="form-control" [(ngModel)]="nombre" placeholder="Nombre completo">
+    </div>
+    <div class="col-12 col-md-6">
+      <label class="form-label fw-medium">Email *</label>
+      <input type="email" class="form-control" [(ngModel)]="email" placeholder="email@ejemplo.com">
+    </div>
+    <div class="col-12 col-md-6" *ngIf="!usuarioEditando">
+      <label class="form-label fw-medium">Contraseña inicial *</label>
+      <input type="password" class="form-control" [(ngModel)]="password" placeholder="Mínimo 6 caracteres">
+    </div>
+    <div class="col-12 col-md-6">
+      <label class="form-label fw-medium">Rol</label>
+      <select class="form-select" [(ngModel)]="rol">
+        <option value="Usuario">Usuario</option>
+        <option value="Admin">Admin</option>
+      </select>
+    </div>
+    <div class="col-12 col-md-6" *ngIf="usuarioEditando">
+      <label class="form-label fw-medium">Estado</label>
+      <select class="form-select" [(ngModel)]="estado">
+        <option value="Activo">Activo</option>
+        <option value="Inactivo">Inactivo</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="d-flex gap-2">
+    <button class="btn btn-dark" (click)="guardarUsuario()" [disabled]="guardando">
+      <span *ngIf="guardando" class="spinner-border spinner-border-sm me-2"></span>
+      Guardar
+    </button>
+    <button class="btn btn-outline-secondary" (click)="cerrarFormulario()">Cancelar</button>
+  </div>
+</div>
+
+<!-- Filtros -->
+<div class="card border rounded-3 shadow-sm p-3 mb-4">
+  <div class="d-flex gap-3 flex-wrap align-items-center">
+    <div class="input-group flex-grow-1" style="min-width:200px;max-width:360px;">
+      <span class="input-group-text bg-light border-end-0">
+        <i class="bi bi-search text-secondary"></i>
+      </span>
+      <input type="text" class="form-control bg-light border-start-0"
+             placeholder="Buscar por nombre o email..." [(ngModel)]="busqueda">
+    </div>
+    <select class="form-select form-select-sm" style="max-width:160px;" [(ngModel)]="filtroRol">
+      <option value="">Todos los roles</option>
+      <option value="Admin">Admin</option>
+      <option value="Usuario">Usuario</option>
+    </select>
+    <select class="form-select form-select-sm" style="max-width:160px;" [(ngModel)]="filtroEstado">
+      <option value="">Todos los estados</option>
+      <option value="Activo">Activo</option>
+      <option value="Inactivo">Inactivo</option>
+    </select>
+  </div>
+</div>
+
+<div class="p-3 text-secondary" *ngIf="cargando">
+  <span class="spinner-border spinner-border-sm me-2"></span>Cargando...
+</div>
+
+<!-- Tabla -->
+<div class="card border rounded-3 shadow-sm mb-4 overflow-hidden" *ngIf="!cargando">
+  <div class="table-responsive">
+    <table class="table table-hover mb-0 align-middle">
+      <thead class="table-light border-bottom">
+        <tr>
+          <th class="px-4 py-3 fw-semibold text-dark">Usuario</th>
+          <th class="px-4 py-3 fw-semibold text-dark">Email</th>
+          <th class="px-4 py-3 fw-semibold text-dark">Rol</th>
+          <th class="px-4 py-3 fw-semibold text-dark">Estado</th>
+          <th class="px-4 py-3 fw-semibold text-dark">Último acceso</th>
+          <th class="px-4 py-3 fw-semibold text-dark">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let u of usuariosFiltrados">
+          <td class="px-4 py-3">
+            <div class="d-flex align-items-center gap-3">
+              <div class="rounded-circle bg-light d-flex align-items-center justify-content-center fw-semibold text-secondary flex-shrink-0"
+                   style="width:40px;height:40px;">
+                {{ inicial(u.nombre) }}
+              </div>
+              <span class="fw-medium text-dark">{{ u.nombre }}</span>
+            </div>
+          </td>
+          <td class="px-4 py-3 text-secondary small">{{ u.email }}</td>
+          <td class="px-4 py-3">
+            <span class="badge rounded-2 px-2 py-1 small"
+                  [style.background]="u.rol === 'Admin' ? '#DBEAFE' : '#F1F5F9'"
+                  [style.color]="u.rol === 'Admin' ? '#1E40AF' : '#1E293B'">
+              {{ u.rol }}
+            </span>
+          </td>
+          <td class="px-4 py-3">
+            <div class="d-flex align-items-center gap-2">
+              <div class="rounded-circle"
+                   [style.background]="u.estado === 'Activo' ? '#22C55E' : '#CBD5E1'"
+                   style="width:8px;height:8px;"></div>
+              <span class="small text-dark">{{ u.estado }}</span>
+            </div>
+          </td>
+          <td class="px-4 py-3 text-secondary small">{{ u.ultimoAcceso || '—' }}</td>
+          <td class="px-4 py-3">
+            <div class="d-flex gap-1">
+              <button class="btn btn-sm btn-light px-2" title="Editar" (click)="abrirFormularioEditar(u)">
+                <i class="bi bi-pencil text-secondary"></i>
+              </button>
+              <button class="btn btn-sm btn-light px-2" title="Eliminar" (click)="eliminar(u.id)">
+                <i class="bi bi-trash text-danger"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+        <tr *ngIf="usuariosFiltrados.length === 0">
+          <td colspan="6" class="text-center text-secondary py-5">
+            <i class="bi bi-person-x fs-1 d-block mb-2"></i>
+            No se encontraron usuarios.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Stats -->
+<div class="row g-4">
+  <div class="col-12 col-md-4">
+    <div class="card border rounded-3 shadow-sm p-4 text-center">
+      <div class="rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center"
+           style="width:48px;height:48px;background:#DBEAFE;">
+        <i class="bi bi-people" style="color:#2563EB;"></i>
+      </div>
+      <h3 class="fw-bold text-dark mb-0">{{ totalUsuarios }}</h3>
+      <p class="text-secondary small mb-0">Total usuarios</p>
+    </div>
+  </div>
+  <div class="col-12 col-md-4">
+    <div class="card border rounded-3 shadow-sm p-4 text-center">
+      <div class="rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center"
+           style="width:48px;height:48px;background:#DCFCE7;">
+        <i class="bi bi-person-gear" style="color:#16A34A;"></i>
+      </div>
+      <h3 class="fw-bold text-dark mb-0">{{ totalAdmins }}</h3>
+      <p class="text-secondary small mb-0">Administradores</p>
+    </div>
+  </div>
+  <div class="col-12 col-md-4">
+    <div class="card border rounded-3 shadow-sm p-4 text-center">
+      <div class="rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center"
+           style="width:48px;height:48px;background:#FAF5FF;">
+        <i class="bi bi-person-check" style="color:#9333EA;"></i>
+      </div>
+      <h3 class="fw-bold text-dark mb-0">{{ totalActivos }}</h3>
+      <p class="text-secondary small mb-0">Usuarios activos</p>
+    </div>
+  </div>
+</div>

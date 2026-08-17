@@ -1,0 +1,222 @@
+<!-- Header -->
+<div class="mb-4 d-flex align-items-center justify-content-between">
+  <div>
+    <h1 class="h3 fw-bold text-dark mb-1">Conversaciones</h1>
+    <p class="text-secondary mb-0">Gestioná tus conversaciones con clientes</p>
+  </div>
+  <button class="btn btn-dark btn-sm" (click)="abrirSelectorCliente()">
+    <i class="bi bi-plus-lg me-1"></i>Nueva conversación
+  </button>
+</div>
+
+<div class="alert alert-danger py-2 small" *ngIf="error">{{ error }}</div>
+
+<!-- Selector de cliente para iniciar conversación -->
+<div class="card border rounded-3 shadow-sm p-4 mb-4" *ngIf="mostrandoSelectorCliente">
+  <h2 class="h6 fw-semibold text-dark mb-3">Elegí un cliente</h2>
+
+  <div *ngIf="clientesDisponibles.length > 0">
+    <select class="form-select mb-3" [(ngModel)]="clienteSeleccionadoId">
+      <option [ngValue]="null" disabled>Seleccioná un cliente...</option>
+      <option *ngFor="let c of clientesDisponibles" [ngValue]="c.id">{{ c.nombre }} — {{ c.empresa }}</option>
+    </select>
+    <div class="d-flex gap-2">
+      <button class="btn btn-dark" [disabled]="!clienteSeleccionadoId" (click)="iniciarConversacion()">Iniciar</button>
+      <button class="btn btn-outline-secondary" (click)="cerrarSelectorCliente()">Cancelar</button>
+    </div>
+  </div>
+
+  <p class="text-secondary small mb-0" *ngIf="clientesDisponibles.length === 0">
+    Todavía no tenés clientes cargados. Andá a la sección "Clientes" para agregar uno primero.
+  </p>
+</div>
+
+<!-- Grid 3 columnas -->
+<div class="row g-3" style="height: calc(100vh - 180px); min-height: 500px;">
+
+  <!-- Columna 1: Lista de chats -->
+  <div class="col-12 col-lg-3 d-flex flex-column">
+    <div class="card border rounded-3 shadow-sm h-100 d-flex flex-column overflow-hidden">
+      <div class="p-3 border-bottom">
+        <div class="input-group">
+          <span class="input-group-text bg-light border-end-0">
+            <i class="bi bi-search text-secondary small"></i>
+          </span>
+          <input type="text" class="form-control bg-light border-start-0 small"
+                 placeholder="Buscar..." [(ngModel)]="busqueda">
+        </div>
+      </div>
+      <div class="p-3 text-secondary text-center" *ngIf="cargando">
+        <span class="spinner-border spinner-border-sm me-2"></span>Cargando...
+      </div>
+      <div class="overflow-y-auto flex-grow-1" *ngIf="!cargando">
+        <button *ngFor="let conv of conversacionesFiltradas"
+                class="w-100 d-flex align-items-start gap-3 p-3 border-bottom border-light text-start border-0 chat-item"
+                [class.selected]="conversacionSeleccionada?.id === conv.id"
+                (click)="seleccionar(conv)">
+          <div class="position-relative flex-shrink-0">
+            <div class="rounded-circle bg-light d-flex align-items-center justify-content-center fw-semibold text-secondary"
+                 style="width:44px;height:44px;">
+              {{ inicial(conv.nombre) }}
+            </div>
+            <span *ngIf="conv.sinLeer > 0"
+                  class="position-absolute top-0 end-0 badge rounded-circle bg-dark text-white d-flex align-items-center justify-content-center"
+                  style="width:18px;height:18px;font-size:0.65rem;">
+              {{ conv.sinLeer }}
+            </span>
+          </div>
+          <div class="flex-grow-1 overflow-hidden">
+            <div class="d-flex justify-content-between mb-1">
+              <span class="fw-medium text-dark small">{{ conv.nombre }}</span>
+              <span class="text-secondary" style="font-size:0.7rem;">{{ conv.hora }}</span>
+            </div>
+            <p class="text-secondary text-truncate mb-1" style="font-size:0.8rem;">{{ conv.ultimoMensaje }}</p>
+            <span class="badge rounded-2 px-2 py-0 small" [ngClass]="badgeClass(conv.estado)">{{ badgeLabel(conv.estado) }}</span>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Columna 2: Chat -->
+  <div class="col-12 col-lg-6 d-flex flex-column">
+    <div class="card border rounded-3 shadow-sm h-100 d-flex flex-column overflow-hidden">
+
+      <!-- Sin conversación seleccionada -->
+      <div *ngIf="!conversacionSeleccionada"
+           class="flex-grow-1 d-flex align-items-center justify-content-center text-secondary flex-column gap-2">
+        <i class="bi bi-chat-dots fs-1"></i>
+        <p class="mb-0">Seleccioná una conversación</p>
+      </div>
+
+      <!-- Con conversación seleccionada -->
+      <ng-container *ngIf="conversacionSeleccionada">
+        <!-- Header chat -->
+        <div class="p-3 border-bottom d-flex align-items-center justify-content-between">
+          <div class="d-flex align-items-center gap-3">
+            <div class="rounded-circle bg-light d-flex align-items-center justify-content-center fw-semibold text-secondary"
+                 style="width:40px;height:40px;">
+              {{ inicial(conversacionSeleccionada.nombre) }}
+            </div>
+            <div>
+              <p class="fw-semibold text-dark mb-0 small">{{ conversacionSeleccionada.nombre }}</p>
+              <p class="text-secondary mb-0" style="font-size:0.75rem;">{{ conversacionSeleccionada.empresa }}</p>
+            </div>
+          </div>
+          <div class="d-flex gap-2">
+            <button class="btn btn-sm btn-outline-secondary"
+                    *ngIf="conversacionSeleccionada.estado !== 'cerrado'"
+                    (click)="cambiarEstado('en-curso')">Marcar pendiente</button>
+            <button class="btn btn-sm btn-outline-danger"
+                    *ngIf="conversacionSeleccionada.estado !== 'cerrado'"
+                    (click)="cambiarEstado('cerrado')">Cerrar chat</button>
+            <span class="badge rounded-2 px-2 py-1 small" [ngClass]="badgeClass(conversacionSeleccionada.estado)"
+                  *ngIf="conversacionSeleccionada.estado === 'cerrado'">Cerrado</span>
+          </div>
+        </div>
+
+        <!-- Mensajes -->
+        <div class="flex-grow-1 overflow-y-auto p-3 d-flex flex-column gap-3" style="background:#F8FAFC;">
+          <div class="text-center text-secondary" *ngIf="cargandoMensajes">
+            <span class="spinner-border spinner-border-sm me-2"></span>Cargando mensajes...
+          </div>
+          <div *ngFor="let msg of mensajes"
+               class="d-flex" [class.justify-content-end]="msg.esPropio">
+            <div class="px-3 py-2 rounded-3 chat-bubble"
+                 [class.bubble-own]="msg.esPropio"
+                 [class.bubble-received]="!msg.esPropio"
+                 style="max-width:70%;">
+              <p class="mb-0 small">{{ msg.texto }}</p>
+              <p class="mb-0 text-end" style="font-size:0.7rem;opacity:0.7;">{{ msg.hora }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Input de mensaje -->
+        <div class="p-3 border-top bg-white d-flex gap-2 align-items-end"
+             *ngIf="conversacionSeleccionada.estado !== 'cerrado'">
+          <textarea class="form-control form-control-sm"
+                    rows="2"
+                    placeholder="Escribí tu mensaje..."
+                    [(ngModel)]="nuevoMensaje"
+                    [disabled]="enviando"
+                    (keydown.enter)="$event.preventDefault(); enviarMensaje()"
+                    style="resize:none;"></textarea>
+          <button class="btn btn-dark btn-sm px-3" (click)="enviarMensaje()" [disabled]="enviando">
+            <span *ngIf="enviando" class="spinner-border spinner-border-sm"></span>
+            <i class="bi bi-send" *ngIf="!enviando"></i>
+          </button>
+        </div>
+        <div class="p-3 border-top bg-light text-center text-secondary small"
+             *ngIf="conversacionSeleccionada.estado === 'cerrado'">
+          Esta conversación está cerrada.
+        </div>
+      </ng-container>
+    </div>
+  </div>
+
+  <!-- Columna 3: Info del cliente -->
+  <div class="col-12 col-lg-3 d-flex flex-column">
+    <div class="card border rounded-3 shadow-sm h-100 overflow-y-auto">
+
+      <div *ngIf="!conversacionSeleccionada"
+           class="p-4 text-center text-secondary">
+        <i class="bi bi-person-circle fs-1 d-block mb-2"></i>
+        <p class="small mb-0">Seleccioná un chat para ver la info del cliente</p>
+      </div>
+
+      <div *ngIf="conversacionSeleccionada" class="p-4">
+        <h6 class="fw-semibold text-dark mb-3">Información del Cliente</h6>
+
+        <div class="d-flex align-items-start gap-2 mb-3">
+          <i class="bi bi-envelope text-secondary mt-1"></i>
+          <div>
+            <p class="text-secondary mb-0" style="font-size:0.7rem;">Email</p>
+            <p class="small text-dark mb-0">{{ conversacionSeleccionada.email }}</p>
+          </div>
+        </div>
+        <div class="d-flex align-items-start gap-2 mb-3">
+          <i class="bi bi-telephone text-secondary mt-1"></i>
+          <div>
+            <p class="text-secondary mb-0" style="font-size:0.7rem;">Teléfono</p>
+            <p class="small text-dark mb-0">{{ conversacionSeleccionada.telefono }}</p>
+          </div>
+        </div>
+        <div class="d-flex align-items-start gap-2 mb-4">
+          <i class="bi bi-building text-secondary mt-1"></i>
+          <div>
+            <p class="text-secondary mb-0" style="font-size:0.7rem;">Empresa</p>
+            <p class="small text-dark mb-0">{{ conversacionSeleccionada.empresa }}</p>
+          </div>
+        </div>
+
+        <!-- Etiquetas -->
+        <div class="border-top pt-4 mb-4" *ngIf="conversacionSeleccionada.etiquetas?.length">
+          <p class="fw-semibold text-dark small mb-2">Etiquetas</p>
+          <div class="d-flex flex-wrap gap-2">
+            <span *ngFor="let tag of conversacionSeleccionada.etiquetas"
+                  class="badge rounded-pill px-3 py-1"
+                  style="background:#F8FAFC;color:#334155;border:1px solid #E2E8F0;font-size:0.75rem;">
+              {{ tag }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Historial -->
+        <div class="border-top pt-4" *ngIf="conversacionSeleccionada.historial?.length">
+          <p class="fw-semibold text-dark small mb-3">Historial</p>
+          <div *ngFor="let h of conversacionSeleccionada.historial"
+               class="d-flex gap-3 mb-3">
+            <div class="rounded-circle bg-secondary flex-shrink-0 mt-1"
+                 style="width:8px;height:8px;"></div>
+            <div>
+              <p class="small text-dark mb-0">{{ h.accion }}</p>
+              <p class="text-secondary mb-0" style="font-size:0.7rem;">{{ h.fecha }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

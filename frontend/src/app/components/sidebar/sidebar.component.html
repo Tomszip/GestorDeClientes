@@ -1,0 +1,42 @@
+<div class="sidebar d-flex flex-column h-100" [class.collapsed]="isCollapsed">
+
+  <!-- Header -->
+  <div class="sidebar-header d-flex align-items-center justify-content-between px-3 py-3 border-bottom">
+    <div class="d-flex align-items-center gap-2" *ngIf="!isCollapsed">
+      <div class="logo-icon d-flex align-items-center justify-content-center rounded-2">
+        <i class="bi bi-diagram-3 text-white"></i>
+      </div>
+      <span class="fw-bold text-dark">{{ nombreSitio }}</span>
+    </div>
+    <button class="btn btn-sm btn-link text-secondary p-0" (click)="toggle()">
+      <i class="bi" [class.bi-list]="isCollapsed" [class.bi-x-lg]="!isCollapsed"></i>
+    </button>
+  </div>
+
+  <!-- Nav items -->
+  <nav class="flex-grow-1 px-2 py-3">
+    <ul class="list-unstyled mb-0">
+      <li *ngFor="let item of menuItems" class="mb-1">
+        <button
+          class="nav-btn w-100 d-flex align-items-center gap-3 px-3 py-2 rounded-2 border-0 text-start"
+          [class.active]="isActive(item.route)"
+          (click)="navigate(item.route)"
+          [title]="isCollapsed ? item.label : ''">
+          <i class="bi {{ item.icon }} fs-5 flex-shrink-0"></i>
+          <span *ngIf="!isCollapsed">{{ item.label }}</span>
+        </button>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Footer logout -->
+  <div class="px-2 py-3 border-top">
+    <button
+      class="nav-btn w-100 d-flex align-items-center gap-3 px-3 py-2 rounded-2 border-0 text-danger text-start"
+      (click)="logout()"
+      [title]="isCollapsed ? 'Cerrar sesión' : ''">
+      <i class="bi bi-box-arrow-left fs-5 flex-shrink-0"></i>
+      <span *ngIf="!isCollapsed">Cerrar sesión</span>
+    </button>
+  </div>
+</div>

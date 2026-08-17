@@ -1,0 +1,11 @@
+.hover-card {
+  transition: box-shadow 0.2s ease;
+  cursor: pointer;
+}
+.hover-card:hover {
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08) !important;
+}
+.badge-activo    { background:#DCFCE7; color:#166534; }
+.badge-nuevo     { background:#DBEAFE; color:#1E40AF; }
+.badge-pendiente { background:#FFEDD5; color:#9A3412; }
+.badge-inactivo  { background:#F1F5F9; color:#1E293B; }

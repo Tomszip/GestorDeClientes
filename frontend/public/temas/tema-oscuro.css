@@ -1,0 +1,98 @@
+/* Tema Oscuro — modo oscuro tradicional: fondos casi negros, texto claro,
+   y acento NEGRO (no azul, no gris claro) para los botones/estados
+   activos. Invierte los fondos claros de Bootstrap (body, cards, tablas,
+   inputs) a superficies oscuras. Se carga DESPUES de bootstrap.min.css
+   para poder pisar sus clases con !important. */
+:root {
+  --primary-color: #000000;
+}
+
+body {
+  background-color: #0F172A !important;
+  color: #E2E8F0;
+}
+
+.card,
+.list-group-item,
+.dropdown-menu,
+.modal-content {
+  background-color: #1E293B !important;
+  color: #E2E8F0 !important;
+  border-color: #334155 !important;
+}
+
+/* Las tablas de Bootstrap 5.3 no heredan el fondo de la tarjeta que las
+   contiene: pintan cada celda con la variable --bs-table-bg. Hay que
+   redefinir esa variable (y el color/borde) para que se vean oscuras. */
+.table {
+  --bs-table-bg: #1E293B;
+  --bs-table-color: #E2E8F0;
+  --bs-table-border-color: #334155;
+  --bs-table-striped-bg: #24334A;
+  --bs-table-hover-bg: #24334A;
+  --bs-table-hover-color: #E2E8F0;
+}
+
+.table > :not(caption) > * > * {
+  background-color: var(--bs-table-bg) !important;
+  color: var(--bs-table-color) !important;
+  border-bottom-color: #334155 !important;
+}
+
+.table-light,
+thead.table-light {
+  --bs-table-bg: #334155;
+  --bs-table-color: #E2E8F0;
+  background-color: #334155 !important;
+  color: #E2E8F0 !important;
+}
+
+.sidebar,
+.navbar,
+.bg-white {
+  background-color: #1E293B !important;
+  border-color: #334155 !important;
+}
+
+.text-dark { color: #E2E8F0 !important; }
+.text-secondary { color: #94A3B8 !important; }
+.bg-light { background-color: #334155 !important; }
+
+.form-control,
+.form-select,
+textarea {
+  background-color: #0F172A !important;
+  color: #E2E8F0 !important;
+  border-color: #334155 !important;
+}
+
+/* El acento es negro puro, así que sobre tarjetas oscuras (#1E293B)
+   necesita un borde propio para no perderse visualmente. */
+.btn-dark {
+  background-color: var(--primary-color) !important;
+  border: 1px solid #475569 !important;
+  color: #F8FAFC !important;
+}
+
+.btn-dark:hover,
+.btn-dark:focus {
+  background-color: #1E293B !important;
+  border-color: #64748B !important;
+  color: #F8FAFC !important;
+}
+
+.btn-light {
+  background-color: #334155 !important;
+  color: #E2E8F0 !important;
+}
+
+.nav-btn:hover {
+  background-color: #334155 !important;
+  color: #E2E8F0 !important;
+}
+
+.nav-btn.active {
+  background-color: var(--primary-color) !important;
+  color: #F8FAFC !important;
+  border: 1px solid #334155;
+}

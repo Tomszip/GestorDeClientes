@@ -1,0 +1,16 @@
+/* Tema Corporativo — mismo esquema claro, pero con azul como color
+   principal en vez del slate oscuro por defecto. */
+:root {
+  --primary-color: #1E3A8A;
+}
+
+.btn-dark {
+  background-color: var(--primary-color) !important;
+  border-color: var(--primary-color) !important;
+}
+
+.btn-dark:hover,
+.btn-dark:focus {
+  background-color: #1E40AF !important;
+  border-color: #1E40AF !important;
+}

@@ -1,0 +1,17 @@
+.tema-opcion {
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.tema-opcion.seleccionado {
+  border-color: var(--primary-color) !important;
+  border-width: 2px !important;
+}
+
+.tema-swatch {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  border: 1px solid #E2E8F0;
+}

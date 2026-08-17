@@ -1,0 +1,36 @@
+.sidebar {
+  width: 250px;
+  min-height: 100vh;
+  background: #fff;
+  transition: width 0.25s ease;
+  overflow: hidden;
+}
+
+.sidebar.collapsed {
+  width: 70px;
+}
+
+.logo-icon {
+  width: 32px;
+  height: 32px;
+  background-color: var(--primary-color);
+}
+
+.nav-btn {
+  background: transparent;
+  color: #475569;
+  font-size: 0.9rem;
+  transition: background 0.15s, color 0.15s;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.nav-btn:hover {
+  background-color: #F1F5F9;
+  color: var(--primary-color);
+}
+
+.nav-btn.active {
+  background-color: var(--primary-color);
+  color: #fff !important;
+}

@@ -1,0 +1,29 @@
+<nav class="navbar bg-white border-bottom px-4" style="height: 64px;">
+  <div class="container-fluid px-0">
+
+    <div class="d-flex align-items-center gap-3 flex-grow-1">
+      <div class="input-group" style="max-width: 360px;">
+        <span class="input-group-text bg-light border-end-0 border-secondary-subtle">
+          <i class="bi bi-search text-secondary"></i>
+        </span>
+        <input type="text" class="form-control bg-light border-start-0 border-secondary-subtle"
+          placeholder="Buscar clientes, contenidos...">
+      </div>
+    </div>
+
+    <div class="d-flex align-items-center gap-3">
+      <button class="btn btn-light position-relative rounded-2 px-2">
+        <i class="bi bi-bell fs-5"></i>
+        <span class="position-absolute top-0 end-0 translate-middle p-1 bg-danger rounded-circle" style="width:8px;height:8px;"></span>
+      </button>
+      <div class="d-flex align-items-center gap-2">
+        <div class="rounded-circle bg-dark text-white d-flex align-items-center justify-content-center fw-bold"
+          style="width:36px;height:36px;font-size:0.85rem;">
+          {{ userInitials }}
+        </div>
+        <span class="fw-medium text-dark d-none d-md-inline">{{ userName }}</span>
+      </div>
+    </div>
+
+  </div>
+</nav>

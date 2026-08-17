@@ -1,0 +1,14 @@
+# Los archivos subidos por los usuarios no deben poder ejecutarse como
+# scripts PHP (evita el clasico ataque de subir un ".php" disfrazado).
+<IfModule mod_php.c>
+    php_flag engine off
+</IfModule>
+
+<FilesMatch "\.(php|phtml|php3|php4|php5|pht|phar)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Deny from all
+    </IfModule>
+</FilesMatch>

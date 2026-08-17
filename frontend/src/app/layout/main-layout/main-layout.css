@@ -1,0 +1,19 @@
+.main-content {
+  transition: margin-left 0.25s ease;
+  min-height: 100vh;
+}
+
+.main-content.sidebar-expanded {
+  margin-left: 250px;
+}
+
+.main-content.sidebar-collapsed {
+  margin-left: 70px;
+}
+
+@media (max-width: 768px) {
+  .main-content.sidebar-expanded,
+  .main-content.sidebar-collapsed {
+    margin-left: 0;
+  }
+}

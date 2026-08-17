@@ -1,0 +1,132 @@
+<!-- Header -->
+<div class="d-flex align-items-center justify-content-between mb-4">
+  <div>
+    <h1 class="h3 fw-bold text-dark mb-1">Clientes</h1>
+    <p class="text-secondary mb-0">Gestioná tu cartera de clientes</p>
+  </div>
+  <button class="btn btn-dark btn-sm" (click)="abrirFormularioNuevo()">
+    <i class="bi bi-person-plus me-1"></i>Nuevo Cliente
+  </button>
+</div>
+
+<div class="alert alert-danger py-2 small" *ngIf="error">{{ error }}</div>
+
+<!-- Formulario de alta/edición -->
+<div class="card border rounded-3 shadow-sm p-4 mb-4" *ngIf="mostrandoFormulario">
+  <h2 class="h6 fw-semibold text-dark mb-3">{{ clienteEditando ? 'Editar cliente' : 'Nuevo cliente' }}</h2>
+
+  <div class="row g-3 mb-3">
+    <div class="col-12 col-md-6">
+      <label class="form-label fw-medium">Nombre *</label>
+      <input type="text" class="form-control" [(ngModel)]="nombre" placeholder="Nombre completo">
+    </div>
+    <div class="col-12 col-md-6">
+      <label class="form-label fw-medium">Email *</label>
+      <input type="email" class="form-control" [(ngModel)]="email" placeholder="email@ejemplo.com">
+    </div>
+    <div class="col-12 col-md-6">
+      <label class="form-label fw-medium">Teléfono *</label>
+      <input type="text" class="form-control" [(ngModel)]="telefono" placeholder="+54 11 1234-5678">
+    </div>
+    <div class="col-12 col-md-6">
+      <label class="form-label fw-medium">Empresa *</label>
+      <input type="text" class="form-control" [(ngModel)]="empresa" placeholder="Nombre de la empresa">
+    </div>
+    <div class="col-12">
+      <label class="form-label fw-medium">Ubicación (opcional)</label>
+      <input type="text" class="form-control" [(ngModel)]="ubicacion" placeholder="Ciudad, país">
+    </div>
+  </div>
+  <p class="text-secondary small mb-3">* Campos obligatorios</p>
+
+  <div class="d-flex gap-2">
+    <button class="btn btn-dark" (click)="guardarCliente()" [disabled]="guardando">
+      <span *ngIf="guardando" class="spinner-border spinner-border-sm me-2"></span>
+      Guardar
+    </button>
+    <button class="btn btn-outline-secondary" (click)="cerrarFormulario()">Cancelar</button>
+  </div>
+</div>
+
+<!-- Barra de búsqueda -->
+<div class="card border rounded-3 shadow-sm p-3 mb-4">
+  <div class="d-flex gap-3 align-items-center">
+    <div class="input-group flex-grow-1" style="max-width:400px;">
+      <span class="input-group-text bg-light border-end-0">
+        <i class="bi bi-search text-secondary"></i>
+      </span>
+      <input type="text" class="form-control bg-light border-start-0"
+             placeholder="Buscar por nombre, email o empresa..."
+             [(ngModel)]="busqueda">
+    </div>
+    <button class="btn btn-outline-secondary btn-sm">
+      <i class="bi bi-funnel me-1"></i>Filtros
+    </button>
+  </div>
+</div>
+
+<div class="p-3 text-secondary" *ngIf="cargando">
+  <span class="spinner-border spinner-border-sm me-2"></span>Cargando...
+</div>
+
+<!-- Grid de clientes -->
+<div class="row g-4" *ngIf="!cargando">
+  <div class="col-12 col-md-6 col-lg-4" *ngFor="let c of clientesFiltrados">
+    <div class="card border rounded-3 shadow-sm p-4 h-100 hover-card">
+
+      <!-- Header de la card -->
+      <div class="d-flex align-items-start justify-content-between mb-3">
+        <div class="d-flex align-items-center gap-3">
+          <div class="rounded-circle bg-light d-flex align-items-center justify-content-center fw-semibold text-secondary flex-shrink-0"
+               style="width:48px;height:48px;font-size:1.1rem;">
+            {{ inicial(c.nombre) }}
+          </div>
+          <div>
+            <h6 class="fw-semibold text-dark mb-0">{{ c.nombre }}</h6>
+            <p class="text-secondary small mb-0">{{ c.empresa }}</p>
+          </div>
+        </div>
+        <div class="d-flex gap-1">
+          <button class="btn btn-sm btn-light p-1 border-0" title="Editar" (click)="abrirFormularioEditar(c)">
+            <i class="bi bi-pencil text-secondary"></i>
+          </button>
+          <button class="btn btn-sm btn-light p-1 border-0" title="Eliminar" (click)="eliminar(c.id)">
+            <i class="bi bi-trash text-danger"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Datos de contacto -->
+      <div class="mb-3">
+        <p class="small text-secondary mb-1">
+          <i class="bi bi-envelope me-2"></i>{{ c.email }}
+        </p>
+        <p class="small text-secondary mb-1" *ngIf="c.telefono">
+          <i class="bi bi-telephone me-2"></i>{{ c.telefono }}
+        </p>
+        <p class="small text-secondary mb-0" *ngIf="c.ubicacion">
+          <i class="bi bi-geo-alt me-2"></i>{{ c.ubicacion }}
+        </p>
+      </div>
+
+      <!-- Footer -->
+      <div class="d-flex align-items-center justify-content-between pt-3 border-top">
+        <div>
+          <p class="text-secondary mb-0" style="font-size:0.75rem;">Valor de negocios</p>
+          <p class="fw-semibold text-dark mb-0">{{ c.valorNegocios || '—' }}</p>
+        </div>
+        <span class="badge rounded-pill px-3 py-1" [ngClass]="badgeClass(c.estado)">{{ c.estado }}</span>
+      </div>
+
+      <p class="text-secondary mb-0 mt-2" style="font-size:0.75rem;" *ngIf="c.ultimoContacto">
+        Último contacto: <span class="text-dark">{{ c.ultimoContacto }}</span>
+      </p>
+    </div>
+  </div>
+
+  <!-- Sin resultados -->
+  <div class="col-12 text-center py-5 text-secondary" *ngIf="clientesFiltrados.length === 0">
+    <i class="bi bi-people fs-1 d-block mb-2"></i>
+    No se encontraron clientes con esa búsqueda.
+  </div>
+</div>

@@ -1,0 +1,43 @@
+<!-- Header -->
+<div class="mb-4">
+  <h1 class="h3 fw-bold text-dark mb-1">Configuración del Sitio</h1>
+  <p class="text-secondary mb-0">Nombre del sitio y tema visual (Parte 3 de la consigna)</p>
+</div>
+
+<div class="alert alert-danger py-2 small" *ngIf="error">{{ error }}</div>
+<div class="alert alert-success py-2 small" *ngIf="mensajeExito">{{ mensajeExito }}</div>
+
+<div class="p-3 text-secondary" *ngIf="cargando">
+  <span class="spinner-border spinner-border-sm me-2"></span>Cargando...
+</div>
+
+<div class="card border rounded-3 shadow-sm p-4" *ngIf="!cargando" style="max-width:600px;">
+  <div class="mb-4">
+    <label class="form-label fw-medium">Nombre del sitio</label>
+    <input type="text" class="form-control" [(ngModel)]="nombreSitio" placeholder="Nombre que se muestra como título">
+    <small class="text-secondary">Aparece en la pestaña del navegador y en el sidebar de todas las páginas.</small>
+  </div>
+
+  <div class="mb-4">
+    <label class="form-label fw-medium mb-2">Tema visual</label>
+    <div class="d-flex flex-column gap-2">
+      <div class="card border rounded-3 p-3 tema-opcion"
+           *ngFor="let tema of temas"
+           [class.seleccionado]="temaActivoId === tema.id"
+           (click)="temaActivoId = tema.id">
+        <div class="d-flex align-items-center gap-3">
+          <div class="rounded-circle tema-swatch" [style.background]="colorDeVista(tema.nombre)"></div>
+          <div class="flex-grow-1">
+            <p class="fw-medium text-dark mb-0">{{ tema.nombre }}</p>
+          </div>
+          <input type="radio" name="tema" [checked]="temaActivoId === tema.id" (change)="temaActivoId = tema.id">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn btn-dark" (click)="guardar()" [disabled]="guardando">
+    <span *ngIf="guardando" class="spinner-border spinner-border-sm me-2"></span>
+    Guardar cambios
+  </button>
+</div>
